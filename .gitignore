@@ -9,9 +9,11 @@ target/
 /*.sh
 !build.sh
 *~
+*/.mvn/
 packages/
 /branches
 /.svn
+*/target/
 .vscode/
 */src/main/webapp/package-lock.json
 */src/main/webapp/dist/
