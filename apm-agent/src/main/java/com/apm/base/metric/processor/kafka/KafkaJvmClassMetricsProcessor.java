@@ -35,12 +35,6 @@ public class KafkaJvmClassMetricsProcessor extends AbstractJvmClassMetricsProces
     }
 
     private String getMessage(JvmClassMetrics metrics, long startMillis, StringBuilder sb) {
-//        sb.append("jvm_class_metrics")
-//                .append(",AppName=").append(ApmConfig.getInstance().getAppName())
-//                .append(" Total=").append(metrics.getTotal()).append("i")
-//                .append(",Loaded=").append(metrics.getLoaded()).append("i")
-//                .append(",Unloaded=").append(metrics.getUnloaded()).append("i")
-//                .append(" ").append(startNanos);
         sb.append(startMillis).append(";")
                 .append(ApmConfig.getInstance().getAppId()).append(";")
                 .append(ApmConfig.getInstance().getAppName()).append(";")

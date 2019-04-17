@@ -29,8 +29,6 @@ public class KafkaConsumer {
      */
     @KafkaListener(topics = {KafkaTopic.TOPIC_METHOD})
     public void msgMethod(String message){
-
-        redisDao.incrementKafkaTps();
         logger.info("consumer methodMetric {}", message);
         consumerService.saveMethodMetrics(message);
 
@@ -43,7 +41,6 @@ public class KafkaConsumer {
      */
     @KafkaListener(topics = {KafkaTopic.TOPIC_GC})
     public void msgGc(String message){
-        redisDao.incrementKafkaTps();
         logger.info("consumer gcMetric {}", message);
         consumerService.saveGcMetrics(message);
 
@@ -55,7 +52,6 @@ public class KafkaConsumer {
      */
     @KafkaListener(topics = {KafkaTopic.TOPIC_MEM})
     public void msgMem(String message){
-        redisDao.incrementKafkaTps();
         logger.info("consumer memaryMetric {}", message);
         consumerService.saveMemMetrics(message);
     }
@@ -66,7 +62,6 @@ public class KafkaConsumer {
      */
     @KafkaListener(topics = {KafkaTopic.TOPIC_THREAD})
     public void msgThread(String message){
-        redisDao.incrementKafkaTps();
         logger.info("consumer threadMetric {}", message);
         consumerService.saveThreadMetrics(message);
     }
@@ -77,7 +72,6 @@ public class KafkaConsumer {
      */
     @KafkaListener(topics = {KafkaTopic.TOPIC_CLASS})
     public void msgClass(String message){
-        redisDao.incrementKafkaTps();
         logger.info("consumer classMetric {}", message);
         consumerService.saveClassMetrics(message);
     }

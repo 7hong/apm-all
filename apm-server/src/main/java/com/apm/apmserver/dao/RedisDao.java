@@ -74,10 +74,4 @@ public class RedisDao {
         }
         return list;
     }
-
-    public synchronized void incrementKafkaTps() {
-        int min = (int)System.currentTimeMillis() / 1000 / 60;
-        AtomicData.KAFKA_TPS.incrementAndGet(min % 10);
-        AtomicData.KAFKA_TPS.put((min+1) % 10, 0L);
-    }
 }
