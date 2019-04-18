@@ -22,6 +22,7 @@ export default {
   },
   computed: {
     breadCrumbList () {
+      console.log(this.$store.state.app.breadCrumbList);
       return this.$store.state.app.breadCrumbList
     }
   },

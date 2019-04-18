@@ -48,5 +48,6 @@ export default {
   method: '方法监控',
   thread: '线程监控',
   class: '类加载监控',
-  chart: '图表监控'
+  chart: '图表监控',
+  appList: '应用列表'
 }

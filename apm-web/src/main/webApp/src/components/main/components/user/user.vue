@@ -1,8 +1,9 @@
 <template>
   <div class="user-avatar-dropdown">
     <Dropdown @on-click="handleClick">
-      <Badge :dot="!!messageUnreadCount">
-        <Avatar :src="userAvatar"/>
+      <Badge>
+        <!-- <Avatar :src="userAvatar"/> -->
+        <Avatar icon="ios-person" />
       </Badge>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">

@@ -1,30 +1,41 @@
 <template>
   <div>
     <Row :gutter="20">
-      <i-col :xs="12" :md="8" :lg="4" v-for="(infor, i) in inforCardData" :key="`infor-${i}`" style="height: 120px;padding-bottom: 10px;">
+      <!-- <i-col :xs="12" :md="8" :lg="4" v-for="(infor, i) in inforCardData" :key="`infor-${i}`" style="height: 120px;padding-bottom: 10px;">
         <infor-card shadow :color="infor.color" :icon="infor.icon" :icon-size="36">
           <count-to :end="infor.count" count-class="count-style"/>
           <p>{{ infor.title }}</p>
         </infor-card>
-      </i-col>
+      </i-col> -->
+      <Col span="6" v-for="(infor, i) in inforCardData" :key="`infor-${i}`" style="height: 120px;padding-bottom: 10px;">
+        <infor-card shadow :color="infor.color" :icon="infor.icon" :icon-size="36">
+          <count-to :end="infor.count" count-class="count-style"/>
+          <p>{{ infor.title }}</p>
+        </infor-card>
+      </Col>
     </Row>
+    <Alert show-icon closable>
+        欢迎使用APM控制台 V1.0版本
+        <Icon type="ios-bulb-outline" slot="icon"></Icon>
+        <template slot="desc">2019年4月18日 V1.0 本次更新主要修复了版本号不太专业的问题!</template>
+    </Alert>
     <Row :gutter="20" style="margin-top: 10px;">
-      <i-col :md="24" :lg="8" style="margin-bottom: 20px;">
+      <i-col span="8">
         <Card shadow>
-          <chart-pie style="height: 300px;" :value="pieData" text="用户访问来源"></chart-pie>
+          <chart-pie style="height: 500px;" :value="pieData" text="TPS占比(TOP10)"></chart-pie>
         </Card>
       </i-col>
-      <i-col :md="24" :lg="16" style="margin-bottom: 20px;">
+      <i-col span="16">
         <Card shadow>
-          <chart-bar style="height: 300px;" :value="barData" text="最近十分钟系统吞吐量"/>
+          <chart-bar style="height: 500px;" :value="barData" text="上周系统吞吐量"/>
         </Card>
       </i-col>
     </Row>
-    <Row>
+    <!-- <Row>
       <Card shadow>
         <example style="height: 310px;"/>
       </Card>
-    </Row>
+    </Row> -->
   </div>
 </template>
 
@@ -46,13 +57,14 @@ export default {
   data () {
     return {
       inforCardData: [
-        { title: '总应用数', icon: 'md-locate', count: 0, color: '#19be6b' },
-        { title: '总方法数', icon: 'md-help-circle', count: 0, color: '#ff9900' },
-        { title: 'Kafka吞吐量', icon: 'md-map', count: 0, color: '#9A66E4' },
-        { title: '总吞吐量', icon: 'md-share', count: 0, color: '#ed3f14' }
+        { title: '总应用数', icon: 'md-locate', count: 3, color: '#19be6b' },
+        { title: '我的应用', icon: 'md-share', count: 3, color: '#ed3f14' },
+        { title: '总方法数', icon: 'md-help-circle', count: 98, color: '#ff9900' },
+        { title: '总TPS', icon: 'md-map', count: 120, color: '#9A66E4' }
       ],
       pieData: [
-        { value: 335, name: 'mall' }
+        { value: 335, name: 'mall' },
+        { value: 20, name: 'apm-server'}
       ],
       barData: {
         Mon: 13253,

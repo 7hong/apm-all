@@ -4,7 +4,7 @@
             <Col span="4">
                 <AppSelect :selected-value="app" select-width="100%" placeholder="请选择应用" @appSelect="appSelect"></AppSelect>
             </Col>
-            <Col span="5">
+            <Col span="6">
                 <DatePicker @on-ok="timeChange" :confirm="true" type="datetimerange" v-model="time" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择时间" style="width: 100%"></DatePicker>
             </Col>
             <Col span="3">
@@ -39,7 +39,7 @@ export default {
             names:["total","total","peak","daemon","news","runnable","blocked","waiting","terminated","timedWaiting"],
             option:{
                 title: {left: '1%',text: '实时线程监控'},
-                color: ["#d38e87","#76feaa","#E1E100","#fa89e9","#9400D3","#5cb4ff","#9393FF","#00EC00"],
+                color: ["#d38e87", "#76feaa", "#E1E100", "#fa89e9", "#9400D3", "#5cb4ff", "#9393FF", "#00EC00"],
                 tooltip: {
                     trigger: 'axis'
                 },
@@ -54,21 +54,21 @@ export default {
                             type: 'dashed'
                         }
                     },
-                    type : 'value'
+                    type: 'value'
                 }],
-                grid: {left:'1%',right:'15px',top:'20%',bottom: '5%',containLabel:true},
+                grid: {left:'1%',right:'15px',top:'20%',bottom: '5%', containLabel:true},
                 legend: {data: []},
                 series: [
-                    {name:"total", type:"line",data:[]},
-                    {name:"active", type:"line",data:[]},
-                    {name:"peak", type:"line",data:[]},
-                    {name:"daemon", type:"line",data:[]},
-                    {name:"news", type:"line",data:[]},
-                    {name:"runnable", type:"line",data:[]},
-                    {name:"blocked", type:"line",data:[]},
-                    {name:"waiting", type:"line",data:[]},
-                    {name:"terminated", type:"line",data:[]},
-                    {name:"timedWaiting", type:"line",data:[]}
+                    {name:"total", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"active", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"peak", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"daemon", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"news", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"runnable", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"blocked", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"waiting", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"terminated", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"timedWaiting", type:"line", symbol: 'none', smooth: true, data:[]}
                 ]
             }
 
@@ -169,41 +169,39 @@ export default {
             if (!this.checkForm()) {
                 return ;
             }
-            const curr = new Date().getTime();
+            const curr = new Date().getTime()
             if (f['startTime'] < 10000) {
                 f['startTime'] = new Date().getTime() - 3600000;
             }
             if (f.endTime > curr) {
-                f['endTime'] = curr;
+                f['endTime'] = curr
             }
             thread_metric(f).then(res => {
-                const data = res.data;
-                const x = data.time;
-                const that = this;
+                const data = res.data
+                const x = data.time
+                const that = this
                 x.forEach(t => {
-                    this.lastTime = t;
-                    const temp = formatDate(t, "MM-dd hh:mm:ss");
+                    this.lastTime = t
+                    const temp = formatDate(t, 'MM-dd hh:mm:ss')
                     if (this.option.xAxis[0].data.length > 100) {
                         this.option.xAxis[0].data.shift()
-                        this.option.xAxis[0].data.push(temp);
-                        for(var i=0;i<10;i++) {
+                        this.option.xAxis[0].data.push(temp)
+                        for (var i = 0; i < 10; i++) {
                             this.option.series[i].data.shift()
-                            const ddr = data[that.names[i]];
+                            const ddr = data[that.names[i]]
                             ddr.forEach(d => {
-                                this.option.series[i].data.push(d);
+                                this.option.series[i].data.push(d)
                             })
                         }
                     } else {
-                        this.option.xAxis[0].data.push(temp);
-                        for(var i=0;i<10;i++) {
-                            const ddr = data[that.names[i]];
+                        this.option.xAxis[0].data.push(temp)
+                        for (var i = 0; i < 10; i++) {
+                            const ddr = data[that.names[i]]
                             ddr.forEach(d => {
-                                this.option.series[i].data.push(d);
+                                this.option.series[i].data.push(d)
                             })
                         }
                     }
-
-
                 });
                 this.chart1.setOption(this.option);
                 this.chart1.resize();

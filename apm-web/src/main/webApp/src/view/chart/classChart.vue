@@ -4,7 +4,7 @@
             <Col span="4">
                 <AppSelect :selected-value="app" select-width="100%" placeholder="请选择应用" @appSelect="appSelect"></AppSelect>
             </Col>
-            <Col span="5">
+            <Col span="6">
                 <DatePicker @on-ok="timeChange" :confirm="true" type="datetimerange" v-model="time" format="yyyy-MM-dd HH:mm:ss" placeholder="请选择时间" style="width: 100%"></DatePicker>
             </Col>
             <Col span="3">
@@ -59,9 +59,9 @@ export default {
                 grid: {left:'1%',right:'15px',top:'20%',bottom: '5%',containLabel:true},
                 legend: {data: []},
                 series: [
-                    {name:"total", type:"line",data:[]},
-                    {name:"loaded", type:"line",data:[]},
-                    {name:"unloaded", type:"line",data:[]}
+                    {name:"total", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"loaded", type:"line", symbol: 'none', smooth: true, data:[]},
+                    {name:"unloaded", type:"line", symbol: 'none', smooth: true, data:[]}
                 ]
             }
 

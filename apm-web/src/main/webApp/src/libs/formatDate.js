@@ -1,5 +1,5 @@
 /**
- * Created by jichunyang on 2018/2/9.
+ * Created by jiangqihong on 2018/2/9.
  */
 export function formatDate(dt, fmt) {
   var date = new Date(dt);
@@ -17,8 +17,8 @@ export function formatDate(dt, fmt) {
   }
   for (var k in o) {
     if (new RegExp("(" + k + ")").test(fmt)) {
-      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)))
     }
   }
-  return fmt;
+  return fmt
 }

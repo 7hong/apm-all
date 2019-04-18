@@ -43,8 +43,8 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
     }
 
     private MethodTag getMethodTag(String innerClassName, String methodName, String desc) {
-//        int idx = innerClassName.replace('.', '/').lastIndexOf('/');
-//        String simpleClassName = innerClassName.substring(idx + 1);
+///        int idx = innerClassName.replace('.', '/').lastIndexOf('/');
+///        String simpleClassName = innerClassName.substring(idx + 1);
         String methodParamDesc = profilingConfig.isShowMethodParams() ? "(" + TypeDescUtils.getMethodParamsDesc(desc) + ")" : "";
         return MethodTag.getInstance(innerClassName.replace("/","."), methodName, methodParamDesc);
     }

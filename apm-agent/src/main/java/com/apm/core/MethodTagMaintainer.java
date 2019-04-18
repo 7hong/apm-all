@@ -13,6 +13,9 @@ public class MethodTagMaintainer extends AbstractMethodTagMaintainer {
 
     private final AtomicInteger index = new AtomicInteger(0);
 
+    /**
+     * 可以用原子方式更新其元素的对象引用数组
+     */
     private final AtomicReferenceArray<MethodTag> methodTagArr = new AtomicReferenceArray<>(MAX_NUM);
 
     private static final MethodTagMaintainer instance = new MethodTagMaintainer();

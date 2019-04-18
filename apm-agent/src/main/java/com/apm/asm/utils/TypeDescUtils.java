@@ -7,10 +7,14 @@ import com.apm.base.util.Logger;
  */
 public final class TypeDescUtils {
 
-    //类型􏰀述符
+    /**
+     * 类型描述符
+     */
     private static final char[] TYPE_DESCRIPTOR = {'Z', 'C', 'B', 'S', 'I', 'F', 'J', 'D', '[', 'L'};
 
-    //Java 类型
+    /**
+     * Java 类型
+     */
     private static final String[] JAVA_TYPE_DESC = {"boolean", "char", "byte", "short", "int", "float", "long", "double", "[]", "Object"};
 
     private static final byte[] TYPE_DESCRIPTOR_BIT_MAP = new byte[128];
