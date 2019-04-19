@@ -26,7 +26,6 @@ public class KafkaJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsProc
     public void process(JvmMemoryMetrics metrics, long processId, long startMillis, long stopMillis) {
         StringBuilder sb = sbThreadLocal.get();
         try {
-//            logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
             kafkaProducer.send(KafkaTopic.TOPIC_MEM, System.currentTimeMillis()+"",getMessage(metrics, startMillis, sb));
         } finally {
             sb.setLength(0);
@@ -34,17 +33,6 @@ public class KafkaJvmMemoryMetricsProcessor extends AbstractJvmMemoryMetricsProc
     }
 
     private String getMessage(JvmMemoryMetrics metrics, long startMillis, StringBuilder sb) {
-//        sb.append("jvm_memory_metrics")
-//                .append(",AppName=").append(ApmConfig.getInstance().getAppName())
-//                .append(" NonHeapInit=").append(metrics.getNonHeapInit())
-//                .append(",NonHeapUsed=").append(metrics.getNonHeapUsed())
-//                .append(",NonHeapCommitted=").append(metrics.getNonHeapCommitted())
-//                .append(",NonHeapMax=").append(metrics.getNonHeapMax())
-//                .append(",HeapInit=").append(metrics.getHeapInit())
-//                .append(",HeapUsed=").append(metrics.getHeapUsed())
-//                .append(",HeapCommitted=").append(metrics.getHeapCommitted())
-//                .append(",HeapMax=").append(metrics.getHeapMax())
-//                .append(" ").append(startNanos);
         sb.append(startMillis).append(";")
                 .append(ApmConfig.getInstance().getAppId()).append(";")
                 .append(ApmConfig.getInstance().getAppName()).append(";")

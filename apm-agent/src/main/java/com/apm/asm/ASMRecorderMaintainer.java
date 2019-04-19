@@ -1,7 +1,7 @@
 package com.apm.asm;
 
 
-import com.apm.base.config.ProfilingParams;
+import com.apm.base.config.MethodThreshold;
 import com.apm.core.recorder.AbstractRecorderMaintainer;
 import com.apm.core.recorder.Recorders;
 
@@ -19,10 +19,10 @@ public class ASMRecorderMaintainer extends AbstractRecorderMaintainer {
     }
 
     @Override
-    public void addRecorder(int methodTagId, ProfilingParams params) {
+    public void addRecorder(int methodTagId, MethodThreshold params) {
         for (int i = 0; i < recordersList.size(); ++i) {
             Recorders recorders = recordersList.get(i);
-            recorders.setRecorder(methodTagId, createRecorder(methodTagId, params.getMostTimeThreshold(), params.getOutThresholdCount()));
+            recorders.setRecorder(methodTagId, createRecorder(methodTagId, params.getTime(), params.getCount()));
         }
     }
 }

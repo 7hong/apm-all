@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class Recorders {
 
-    private AtomicReferenceArray<Recorder> recorderArr;
+    public AtomicReferenceArray<Recorder> recorderArr;
 
     private AtomicInteger recorderCount;
 

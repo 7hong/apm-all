@@ -32,7 +32,7 @@ public final class DefaultMethodMetricsFormatter implements MethodMetricsFormatt
             }
 
             sb.append(String.format(dataFormat,
-                    methodMetrics.getMethodTag().getSimpleDesc(),
+                    methodMetrics.getMethodTag().getFullMethodName(),
                     methodMetrics.getRPS(),
                     methodMetrics.getAvgTime(),
                     methodMetrics.getMinTime(),
@@ -63,7 +63,7 @@ public final class DefaultMethodMetricsFormatter implements MethodMetricsFormatt
                 continue;
             }
 
-            result[0] = Math.max(result[0], stats.getMethodTag().getSimpleDesc().length());
+            result[0] = Math.max(result[0], stats.getMethodTag().getFullMethodName().length());
         }
         return result;
     }

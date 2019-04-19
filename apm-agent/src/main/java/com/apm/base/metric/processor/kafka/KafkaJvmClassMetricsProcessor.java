@@ -27,7 +27,6 @@ public class KafkaJvmClassMetricsProcessor extends AbstractJvmClassMetricsProces
     public void process(JvmClassMetrics metrics, long processId, long startMillis, long stopMillis) {
         StringBuilder sb = sbThreadLocal.get();
         try {
-//            logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
             kafkaProducer.send(KafkaTopic.TOPIC_CLASS, System.currentTimeMillis()+"",getMessage(metrics,startMillis,sb));
         } finally {
             sb.setLength(0);

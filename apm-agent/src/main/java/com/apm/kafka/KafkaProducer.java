@@ -1,6 +1,7 @@
 package com.apm.kafka;
 
 import com.apm.base.config.ApmConfig;
+import com.apm.base.util.Logger;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
@@ -31,6 +32,7 @@ public class KafkaProducer {
                 }
             }
         }
+//        Logger.debug("kafka producer :" + message);
         producer.send(new KeyedMessage(topic, key, message));
     }
 }

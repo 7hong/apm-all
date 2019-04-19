@@ -1,6 +1,7 @@
 package com.apm.asm;
 
 import com.apm.asm.aop.ProfilingTransformer;
+import com.apm.core.ASMBootstrap;
 
 import java.lang.instrument.Instrumentation;
 

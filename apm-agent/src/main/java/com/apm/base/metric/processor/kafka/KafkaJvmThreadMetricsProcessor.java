@@ -29,7 +29,6 @@ public class KafkaJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsProc
     public void process(JvmThreadMetrics metrics, long processId, long startMillis, long stopMillis) {
         StringBuilder sb = sbThreadLocal.get();
         try {
-            //logger.log(createLineProtocol(metrics, startMillis * 1000 * 1000L, sb));
             kafkaProducer.send(KafkaTopic.TOPIC_THREAD,System.currentTimeMillis()+"",getMessage(metrics,startMillis,sb));
         } finally {
             sb.setLength(0);
@@ -37,19 +36,6 @@ public class KafkaJvmThreadMetricsProcessor extends AbstractJvmThreadMetricsProc
     }
 
     private String getMessage(JvmThreadMetrics metrics, long startMillis, StringBuilder sb) {
-//        sb.append(startMillis)
-//                .append(ApmConfig.getInstance().getAppId()).append(";")//appid
-//                .append(ApmConfig.getInstance().getAppName()).append(";")//appName
-//                .append(" TotalStarted=").append(metrics.getTotalStarted()).append("i")
-//                .append(",Active=").append(metrics.getActive()).append("i")
-//                .append(",Peak=").append(metrics.getPeak()).append("i")
-//                .append(",Daemon=").append(metrics.getDaemon()).append("i")
-//                .append(",New=").append(metrics.getNews()).append("i")
-//                .append(",Runnable=").append(metrics.getRunnable()).append("i")
-//                .append(",Blocked=").append(metrics.getBlocked()).append("i")
-//                .append(",Waiting=").append(metrics.getWaiting()).append("i")
-//                .append(",TimedWaiting=").append(metrics.getTimedWaiting()).append("i")
-//                .append(",Terminated=").append(metrics.getTerminated()).append("i");
         sb.append(startMillis).append(";")
                 .append(ApmConfig.getInstance().getAppId()).append(";")//appid
                 .append(ApmConfig.getInstance().getAppName()).append(";")//appName

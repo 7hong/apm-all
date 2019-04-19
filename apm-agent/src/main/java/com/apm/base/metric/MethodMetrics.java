@@ -16,9 +16,12 @@ public class MethodMetrics extends Metrics {
     private static final int TP_99999_IDX = 6;
     private static final int TP_100_IDX = 7;
 
-    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 0.99999D, 1.0D};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    /**
+     * 注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+     */
+    private static final double[] TOP_PERCENTILE_ARR = {0.5D, 0.9D, 0.95D, 0.99D, 0.999D, 0.9999D, 0.99999D, 1.0D};
 
-    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1, -1};//注意：tpArr和TOP_PERCENTILE_ARR的大小请保持一致！！！！
+    private final int[] tpArr = {-1, -1, -1, -1, -1, -1, -1, -1};
 
     private MethodTag methodTag;
 

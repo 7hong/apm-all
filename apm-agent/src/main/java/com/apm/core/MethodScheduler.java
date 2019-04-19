@@ -18,7 +18,7 @@ public class MethodScheduler {
             ThreadUtils.newThreadFactory("apm-MethodMetricScheduler-"),
             new ThreadPoolExecutor.DiscardOldestPolicy());
 
-    private final List<Scheduler> schedulerList;
+    private final Scheduler scheduler;
 
     private final long initialDelay;
 
@@ -30,22 +30,24 @@ public class MethodScheduler {
 
     private volatile long nextTimeSliceEndTime = 0L;
 
-    public MethodScheduler(List<Scheduler> schedulerList,
+    public MethodScheduler(Scheduler scheduler,
                            long initialDelay,
                            long period,
                            TimeUnit unit,
                            long millTimeSlice) {
-        this.schedulerList = Collections.unmodifiableList(schedulerList);
+        this.scheduler = scheduler;
         this.millTimeSlice = millTimeSlice;
         this.initialDelay = initialDelay;
         this.period = period;
         this.unit = unit;
     }
 
-    public static void initScheduleTask(List<Scheduler> schedulerList, long millTimeSlice) {
+    public static void initScheduleTask(Scheduler scheduler, long millTimeSlice) {
         ExecutorManager.addExecutorService(scheduledExecutor);
 
-        new MethodScheduler(schedulerList, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice).start();
+        Logger.info("scheduler:=="+scheduler);
+        MethodScheduler methodScheduler = new MethodScheduler(scheduler, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice);
+        methodScheduler.start();
     }
 
 
@@ -72,9 +74,7 @@ public class MethodScheduler {
 
         try {
             long lastTimeSliceStartTime = currentMills - millTimeSlice;
-            for (int i = 0; i < schedulerList.size(); ++i) {
-                runTask(schedulerList.get(i), lastTimeSliceStartTime);
-            }
+            runTask(scheduler, lastTimeSliceStartTime);
         } finally {
             Logger.debug("methodMetricScheduler.runTasks() cost: " + (System.currentTimeMillis() - currentMills) + "ms");
         }

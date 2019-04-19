@@ -3,19 +3,31 @@ package com.apm.base;
 
 public class MethodTag {
 
+    /**
+     * 类名称：eg. com.bs.controller
+     */
     private final String className;
 
+    /**
+     * 方法名：eg. getName
+     */
     private final String methodName;
 
+    /**
+     * 参数列表：eg (String, String)
+     */
     private final String methodParamDesc;
 
-    private final String description;
+    /**
+     * 全名：com.bs.controller.getName(String, String)
+     */
+    private final String fullMethodName;
 
     private MethodTag(String className, String methodName, String methodParamDesc) {
         this.className = className;
         this.methodName = methodName;
         this.methodParamDesc = methodParamDesc;
-        this.description = className + "." + methodName + methodParamDesc;
+        this.fullMethodName = className + "." + methodName + methodParamDesc;
     }
 
     public String getClassName() {
@@ -30,8 +42,8 @@ public class MethodTag {
         return methodParamDesc;
     }
 
-    public String getSimpleDesc() {
-        return description;
+    public String getFullMethodName() {
+        return fullMethodName;
     }
 
     @Override
@@ -40,7 +52,7 @@ public class MethodTag {
                 "className='" + className + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", methodParamDesc='" + methodParamDesc + '\'' +
-                ", description='" + description + '\'' +
+                ", fullMethodName='" + fullMethodName + '\'' +
                 '}';
     }
 

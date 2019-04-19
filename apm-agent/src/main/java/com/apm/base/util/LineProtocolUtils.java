@@ -17,6 +17,8 @@ public final class LineProtocolUtils {
 
 
     /**
+     *
+     * <p>2019年4月19日 不知道这个方法具体干嘛 完全不需要</p>
      * 用于把tagOrField里的 ','  ' '  '=' 转义为符合LineProtocol的格式
      *
      * @param tagOrField : tag key、tag value、field key

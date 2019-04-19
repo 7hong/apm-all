@@ -1,7 +1,10 @@
 package com.apm.core;
 
+import com.apm.asm.ASMRecorderMaintainer;
+import com.apm.asm.aop.ProfilingAspect;
 import com.apm.base.Scheduler;
 import com.apm.base.config.ApmConfig;
+import com.apm.base.config.MethodThreshold;
 import com.apm.base.config.PropertiesUtil;
 import com.apm.base.config.ProfilingFilter;
 import com.apm.base.constant.PropertyKeys;
@@ -16,18 +19,24 @@ import com.apm.core.scheduler.JvmMetricsScheduler;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
-public abstract class AbstractBootstrap {
+public class ASMBootstrap {
 
-    protected MethodMetricsProcessor processor;
+    private static final ASMBootstrap instance = new ASMBootstrap();
 
-    protected AbstractRecorderMaintainer maintainer;
+    private AbstractRecorderMaintainer maintainer;
+
+    private ASMBootstrap() {
+        //empty
+    }
+
+    public static ASMBootstrap getInstance() {
+        return instance;
+    }
 
     public final boolean initial() {
         try {
@@ -46,56 +55,62 @@ public abstract class AbstractBootstrap {
     }
 
     private boolean doInitial() {
+
+        //加载配置文件
         if (!initProperties()) {
             Logger.error("AbstractBootstrap initProperties() FAILURE!!!");
             return false;
         }
 
+        //读取配置属性
         if (!initProfilingConfig()) {
             Logger.error("AbstractBootstrap initProfilingConfig() FAILURE!!!");
             return false;
         }
 
+        //设置日志级别
         if (!initLogger()) {
             Logger.error("AbstractBootstrap initLogger() FAILURE!!!");
             return false;
         }
 
+        //设置排除和过滤的包
         if (!initPackageFilter()) {
             Logger.error("AbstractBootstrap initPackageFilter() FAILURE!!!");
             return false;
         }
 
+        //排除的classLoader
         if (!initClassLoaderFilter()) {
             Logger.error("AbstractBootstrap initClassLoaderFilter() FAILURE!!!");
             return false;
         }
 
+        //排除的方法
         if (!initMethodFilter()) {
             Logger.error("AbstractBootstrap initMethodFilter() FAILURE!!!");
             return false;
         }
 
-        if (!initPerfStatsProcessor()) {
-            Logger.error("AbstractBootstrap initPerfStatsProcessor() FAILURE!!!");
-            return false;
-        }
-
+        //加载ProfilingParamsFile配置文件
         if (!initProfilingParams()) {
             Logger.error("AbstractBootstrap initProfilingParams() FAILURE!!!");
             return false;
         }
 
+        //初始化RecorderMaintainer，初始化后台计算线程池
         if (!initRecorderMaintainer()) {
             Logger.error("AbstractBootstrap initRecorderMaintainer() FAILURE!!!");
             return false;
         }
 
+        //添加shutdownHook
         if (!initShutDownHook()) {
             Logger.error("AbstractBootstrap initShutDownHook() FAILURE!!!");
             return false;
         }
 
+        //初始化jvm、method数据采集任务
         if (!initScheduler()) {
             Logger.error("AbstractBootstrap initScheduler() FAILURE!!!");
             return false;
@@ -111,8 +126,8 @@ public abstract class AbstractBootstrap {
     private boolean initProperties() {
         InputStream in = null;
         try {
-            String configFilePath = System.getProperty(PropertyKeys.PRO_FILE_NAME);
-            in = new FileInputStream(configFilePath);
+            String path = System.getProperty(PropertyKeys.PRO_FILE_NAME);
+            in = new FileInputStream(path);
 
             Properties properties = new Properties();
             properties.load(in);
@@ -157,12 +172,12 @@ public abstract class AbstractBootstrap {
             config.setIncludePackages(includePackages);
 
             config.setExcludePackages(PropertiesUtil.getStr(PropertyKeys.FILTER_EXCLUDE_PACKAGES, ""));
-            config.setPrintDebugLog(PropertiesUtil.getBoolean(PropertyKeys.DEBUG_PRINT_DEBUG_LOG, false));
+            config.setLogLevel(PropertiesUtil.getStr(PropertyKeys.LOG_LEVEL, "info"));
             config.setExcludeMethods(PropertiesUtil.getStr(PropertyKeys.FILTER_EXCLUDE_METHODS, ""));
             config.setExcludePrivateMethod(PropertiesUtil.getBoolean(PropertyKeys.EXCLUDE_PRIVATE_METHODS, true));
             config.setExcludeClassLoaders(PropertiesUtil.getStr(PropertyKeys.FILTER_INCLUDE_CLASS_LOADERS, ""));
             config.setProfilingParamsFile(PropertiesUtil.getStr(PropertyKeys.PROFILING_PARAMS_FILE_NAME, ""));
-            config.setCommonProfilingParams(PropertiesUtil.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1000), PropertiesUtil.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16));
+            config.setMethodThreshold(new MethodThreshold(PropertiesUtil.getInt(PropertyKeys.PROFILING_TIME_THRESHOLD, 1000), PropertiesUtil.getInt(PropertyKeys.PROFILING_OUT_THRESHOLD_COUNT, 16)));
             Logger.info("load config success: " + config.toString());
             return true;
         } catch (Exception e) {
@@ -173,7 +188,7 @@ public abstract class AbstractBootstrap {
 
     private boolean initLogger() {
         try {
-            Logger.setDebugEnable(ApmConfig.getInstance().isPrintDebugLog());
+            Logger.setDebugEnable("debug".equalsIgnoreCase(ApmConfig.getInstance().getLogLevel()));
             return true;
         } catch (Exception e) {
             Logger.error("AbstractBootstrap.initLogger()", e);
@@ -237,17 +252,6 @@ public abstract class AbstractBootstrap {
         return false;
     }
 
-    private boolean initPerfStatsProcessor() {
-        try {
-            //暂时只实现kafka模式
-            processor = MetricsProcessorFactory.getMethodMetricsProcessor();
-            return true;
-        } catch (Exception e) {
-            Logger.error("AbstractBootstrap.initPerfStatsProcessor()", e);
-        }
-        return false;
-    }
-
     private boolean initProfilingParams() {
         InputStream in = null;
         try {
@@ -298,13 +302,17 @@ public abstract class AbstractBootstrap {
     }
 
     private boolean initRecorderMaintainer() {
-        return (maintainer = doInitRecorderMaintainer()) != null;
-    }
+        int backupRecorderCount = ApmConfig.getInstance().getBackupRecorderCount();
 
-    public abstract AbstractRecorderMaintainer doInitRecorderMaintainer();
+        maintainer = ASMRecorderMaintainer.getInstance();
+        MethodMetricsProcessor processor = MetricsProcessorFactory.getMethodMetricsProcessor();
+        boolean initial = maintainer.initial(processor, backupRecorderCount);
+        return initial;
+    }
 
     private boolean initShutDownHook() {
         try {
+            //在jvm推出之前执行，关闭所有线程池
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -325,13 +333,10 @@ public abstract class AbstractBootstrap {
 
     private boolean initScheduler() {
         try {
-            List<Scheduler> schedulers = new ArrayList<>(1);
-            schedulers.add(createJVMMetricsScheduler());
-            LightWeightScheduler.initScheduleTask(schedulers, 10000);
 
-            List<Scheduler> methodchedulers = new ArrayList<>(1);
-            methodchedulers.add(maintainer);
-            MethodScheduler.initScheduleTask(methodchedulers, 1000);
+            JvmMetricScheduler.initScheduleTask(createJVMMetricsScheduler(), 10000);
+
+            MethodScheduler.initScheduleTask(maintainer, 1000);
 
             return true;
         } catch (Exception e) {
@@ -341,7 +346,6 @@ public abstract class AbstractBootstrap {
     }
 
     private Scheduler createJVMMetricsScheduler() {
-        //全部重构为Kafka
         JvmClassMetricsProcessor classProcessor = MetricsProcessorFactory.getClassMetricsProcessor();
         JvmGCMetricsProcessor gcProcessor = MetricsProcessorFactory.getGCMetricsProcessor();
         JvmMemoryMetricsProcessor memoryProcessor = MetricsProcessorFactory.getMemoryMetricsProcessor();
@@ -349,7 +353,21 @@ public abstract class AbstractBootstrap {
         return new JvmMetricsScheduler(classProcessor, gcProcessor, memoryProcessor, threadProcessor);
     }
 
-    public abstract boolean initOther();
+
+    public boolean initOther() {
+        return initProfilerAspect();
+    }
+
+    private boolean initProfilerAspect() {
+        try {
+            ProfilingAspect.setRecorderMaintainer((ASMRecorderMaintainer) maintainer);
+            ProfilingAspect.setRunning(true);
+            return true;
+        } catch (Exception e) {
+            Logger.error("ASMBootstrap.initProfilerAspect()", e);
+        }
+        return false;
+    }
 
     private void printBannerText() {
         String logo = "======探针加载成功=====";

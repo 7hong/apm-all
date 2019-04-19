@@ -1,0 +1,4 @@
+methodMetrics.getMethodTag().getSimpleDesc()com.bs.demoapp.controller.DemoController.demo()
+methodMetrics.getMethodTag().getSimpleDesc()com.bs.demoapp.service.DemoService.demoFun(String, String)
+methodMetrics.getMethodTag().getSimpleDesc()com.bs.demoapp.controller.DemoController.demo()
+methodMetrics.getMethodTag().getSimpleDesc()com.bs.demoapp.service.DemoService.demoFun(String, String)

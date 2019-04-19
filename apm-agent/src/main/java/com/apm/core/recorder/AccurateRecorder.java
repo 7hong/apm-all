@@ -25,10 +25,10 @@ public class AccurateRecorder extends Recorder {
 
     private final ConcurrentHashMap<Integer, AtomicInteger> timingMap;
 
-    private AccurateRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
+    private AccurateRecorder(int methodTagId, int time, int count) {
         super(methodTagId);
-        this.timingArr = new AtomicIntegerArray(mostTimeThreshold + 1);
-        this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(outThresholdCount));
+        this.timingArr = new AtomicIntegerArray(time + 1);
+        this.timingMap = new ConcurrentHashMap<>(MapUtils.getFitCapacity(count));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class AccurateRecorder extends Recorder {
         return timingMap.size();//粗略估计
     }
 
-    public static AccurateRecorder getInstance(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
-        return new AccurateRecorder(methodTagId, mostTimeThreshold, outThresholdCount);
+    public static AccurateRecorder getInstance(int methodTagId, int time, int count) {
+        return new AccurateRecorder(methodTagId, time, count);
     }
 }

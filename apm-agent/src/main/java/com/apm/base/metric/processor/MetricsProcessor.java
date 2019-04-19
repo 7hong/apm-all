@@ -1,6 +1,5 @@
 package com.apm.base.metric.processor;
 
-import com.apm.base.metric.JvmMemoryMetrics;
 import com.apm.base.metric.Metrics;
 
 /**

@@ -2,8 +2,7 @@ package com.apm.core.recorder;
 
 import com.apm.base.MethodTag;
 import com.apm.base.Scheduler;
-import com.apm.base.config.ProfilingParams;
-import com.apm.base.constant.PropertyValues;
+import com.apm.base.config.MethodThreshold;
 import com.apm.base.metric.MethodMetrics;
 import com.apm.base.metric.processor.MethodMetricsProcessor;
 import com.apm.base.util.ExecutorManager;
@@ -11,6 +10,7 @@ import com.apm.base.util.Logger;
 import com.apm.base.util.ThreadUtils;
 import com.apm.core.MethodMetricsCalculator;
 import com.apm.core.MethodTagMaintainer;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,11 +82,11 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
     public abstract boolean initOther();
 
-    protected Recorder createRecorder(int methodTagId, int mostTimeThreshold, int outThresholdCount) {
-        return AccurateRecorder.getInstance(methodTagId, mostTimeThreshold, outThresholdCount);
+    protected Recorder createRecorder(int methodTagId, int time, int count) {
+        return AccurateRecorder.getInstance(methodTagId, time, count);
     }
 
-    public abstract void addRecorder(int methodTagId, ProfilingParams params);
+    public abstract void addRecorder(int methodTagId, MethodThreshold threshold);
 
     public Recorder getRecorder(int methodTagId) {
         return curRecorders.getRecorder(methodTagId);
@@ -102,7 +102,6 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
 
             curIndex = getNextIdx(curIndex);
             Logger.debug("RecorderMaintainer.roundRobinProcessor curIndex=" + curIndex % recordersList.size());
-
             Recorders nextRecorders = recordersList.get(curIndex % recordersList.size());
             nextRecorders.setStartTime(lastTimeSliceStartTime + millTimeSlice);
             nextRecorders.setStopTime(lastTimeSliceStartTime + 2 * millTimeSlice);
@@ -123,6 +122,7 @@ public abstract class AbstractRecorderMaintainer implements Scheduler {
                     try {
                         methodMetricsProcessor.beforeProcess(tmpCurRecorders.getStartTime(), tmpCurRecorders.getStartTime(), tmpCurRecorders.getStopTime());
                         int actualSize = methodTagMaintainer.getMethodTagCount();
+                        //遍历所有方法
                         for (int i = 0; i < actualSize; ++i) {
                             Recorder recorder = tmpCurRecorders.getRecorder(i);
                             if (recorder == null || !recorder.hasRecord()) {

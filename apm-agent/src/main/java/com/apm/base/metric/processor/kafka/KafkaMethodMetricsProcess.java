@@ -4,7 +4,7 @@ import com.apm.base.MethodTag;
 import com.apm.base.config.ApmConfig;
 import com.apm.base.metric.MethodMetrics;
 import com.apm.base.metric.processor.AbstractMethodMetricsProcessor;
-import com.apm.base.util.LineProtocolUtils;
+import com.apm.base.util.Logger;
 import com.apm.base.util.NumFormatUtils;
 import com.apm.kafka.KafkaProducer;
 import com.apm.kafka.KafkaTopic;
@@ -32,6 +32,7 @@ public class KafkaMethodMetricsProcess extends AbstractMethodMetricsProcessor {
         StringBuilder sb = sbThreadLocal.get();
         try {
             String msg = createLineProtocol(metrics, startMillis, sb);
+            Logger.info("msg"+msg);
             kafkaProducer.send(KafkaTopic.TOPIC_METHOD, System.currentTimeMillis()+"", msg);
         } finally {
             sb.setLength(0);
@@ -43,12 +44,11 @@ public class KafkaMethodMetricsProcess extends AbstractMethodMetricsProcessor {
         if (suitSize > MAX_LENGTH) {
             sb = new StringBuilder(suitSize);
         }
-        String methodDesc = LineProtocolUtils.processTagOrField(methodMetrics.getMethodTag().getSimpleDesc());
         sb.append(startNanos).append(";")
                 .append(ApmConfig.getInstance().getAppId()).append(";")//appid
                 .append(ApmConfig.getInstance().getAppName()).append(";")//appName
 //                .append(methodMetrics.getMethodTag().getClassName()).append(";")//服务
-                .append(methodDesc).append(";")
+                .append(methodMetrics.getMethodTag().getFullMethodName()).append(";")
                 .append(methodMetrics.getRPS()).append(";")
                 .append(NumFormatUtils.getFormatStr(methodMetrics.getAvgTime())).append(";")//avg
                 .append(methodMetrics.getMinTime()).append(";")//min
@@ -62,7 +62,7 @@ public class KafkaMethodMetricsProcess extends AbstractMethodMetricsProcessor {
     private int getSuitSize(MethodMetrics methodMetrics) {
         MethodTag methodTag = methodMetrics.getMethodTag();
         return methodTag.getClassName().length()
-                + 8 + methodTag.getSimpleDesc().length()//Method
+                + 8 + methodTag.getFullMethodName().length()//Method
                 + 5 + 6 + 1//RPS
                 + 5 + 7 //Avg
                 + 5 + 3 + 1//Min

@@ -31,6 +31,14 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
 
     private int startTimeIdentifier;
 
+    /**
+     *
+     * @param access
+     * @param name
+     * @param desc eg. (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+     * @param mv
+     * @param innerClassName
+     */
     public ProfilingMethodVisitor(int access,
                                   String name,
                                   String desc,
@@ -43,15 +51,13 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
     }
 
     private MethodTag getMethodTag(String innerClassName, String methodName, String desc) {
-///        int idx = innerClassName.replace('.', '/').lastIndexOf('/');
-///        String simpleClassName = innerClassName.substring(idx + 1);
         String methodParamDesc = profilingConfig.isShowMethodParams() ? "(" + TypeDescUtils.getMethodParamsDesc(desc) + ")" : "";
         return MethodTag.getInstance(innerClassName.replace("/","."), methodName, methodParamDesc);
     }
 
     @Override
     protected void onMethodEnter() {
-        if (profiling()) {
+        if (methodTagId >= 0) {
             maintainer.addRecorder(methodTagId, profilingConfig.getProfilingParam(innerClassName + "/" + methodName));
 
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
@@ -62,14 +68,11 @@ public class ProfilingMethodVisitor extends AdviceAdapter {
 
     @Override
     protected void onMethodExit(int opcode) {
-        if (profiling() && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
+        if (methodTagId >= 0 && ((IRETURN <= opcode && opcode <= RETURN) || opcode == ATHROW)) {
             mv.visitVarInsn(LLOAD, startTimeIdentifier);
             mv.visitLdcInsn(methodTagId);
             mv.visitMethodInsn(INVOKESTATIC, PROFILING_ASPECT_INNER_NAME, "profiling", "(JI)V", false);
         }
     }
 
-    private boolean profiling() {
-        return methodTagId >= 0;
-    }
 }

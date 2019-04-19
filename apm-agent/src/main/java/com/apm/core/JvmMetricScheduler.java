@@ -12,13 +12,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
-public class LightWeightScheduler {
+public class JvmMetricScheduler {
 
     private static final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(2,
-            ThreadUtils.newThreadFactory("apm-LightWeightScheduler-"),
+            ThreadUtils.newThreadFactory("apm-JvmMetricScheduler-"),
             new ThreadPoolExecutor.DiscardOldestPolicy());
 
-    private final List<Scheduler> schedulerList;
+    private final Scheduler scheduler;
 
     private final long initialDelay;
 
@@ -30,22 +30,22 @@ public class LightWeightScheduler {
 
     private volatile long nextTimeSliceEndTime = 0L;
 
-    public LightWeightScheduler(List<Scheduler> schedulerList,
-                                long initialDelay,
-                                long period,
-                                TimeUnit unit,
-                                long millTimeSlice) {
-        this.schedulerList = Collections.unmodifiableList(schedulerList);
+    public JvmMetricScheduler(Scheduler scheduler,
+                              long initialDelay,
+                              long period,
+                              TimeUnit unit,
+                              long millTimeSlice) {
+        this.scheduler = scheduler;
         this.millTimeSlice = millTimeSlice;
         this.initialDelay = initialDelay;
         this.period = period;
         this.unit = unit;
     }
 
-    public static void initScheduleTask(List<Scheduler> schedulerList, long millTimeSlice) {
+    public static void initScheduleTask(Scheduler scheduler, long millTimeSlice) {
         ExecutorManager.addExecutorService(scheduledExecutor);
 
-        new LightWeightScheduler(schedulerList, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice).start();
+        new JvmMetricScheduler(scheduler, 0, 10, TimeUnit.MILLISECONDS, millTimeSlice).start();
     }
 
 
@@ -72,11 +72,9 @@ public class LightWeightScheduler {
 
         try {
             long lastTimeSliceStartTime = currentMills - millTimeSlice;
-            for (int i = 0; i < schedulerList.size(); ++i) {
-                runTask(schedulerList.get(i), lastTimeSliceStartTime);
-            }
+            runTask(scheduler, lastTimeSliceStartTime);
         } finally {
-            Logger.debug("LightWeightScheduler.runTasks() cost: " + (System.currentTimeMillis() - currentMills) + "ms");
+            Logger.debug("JvmMetricScheduler.runTasks() cost: " + (System.currentTimeMillis() - currentMills) + "ms");
         }
     }
 
@@ -84,7 +82,7 @@ public class LightWeightScheduler {
         try {
             scheduler.run(lastTimeSliceStartTime, millTimeSlice);
         } catch (Exception e) {
-            Logger.error("LightWeightScheduler.runTask(" + scheduler + ", " + lastTimeSliceStartTime + ")", e);
+            Logger.error("JvmMetricScheduler.runTask(" + scheduler + ", " + lastTimeSliceStartTime + ")", e);
         }
     }
 

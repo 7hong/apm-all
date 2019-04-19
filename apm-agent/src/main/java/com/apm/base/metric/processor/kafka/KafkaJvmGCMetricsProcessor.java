@@ -4,6 +4,7 @@ import com.apm.base.config.ApmConfig;
 import com.apm.base.metric.JvmGCMetrics;
 import com.apm.base.metric.processor.AbstractJvmGCMetricsProcessor;
 import com.apm.base.util.LineProtocolUtils;
+import com.apm.base.util.Logger;
 import com.apm.kafka.KafkaProducer;
 import com.apm.kafka.KafkaTopic;
 
@@ -34,11 +35,10 @@ public class KafkaJvmGCMetricsProcessor extends AbstractJvmGCMetricsProcessor {
     }
 
     private String getMessage(JvmGCMetrics metrics, long startMillis, StringBuilder sb) {
-        String gcName = LineProtocolUtils.processTagOrField(metrics.getGcName());
         sb.append(startMillis).append(";")
                 .append(ApmConfig.getInstance().getAppId()).append(";")
                 .append(ApmConfig.getInstance().getAppName()).append(";")
-                .append(gcName).append(";")
+                .append(metrics.getGcName()).append(";")
                 .append(metrics.getCollectCount()).append(";")
                 .append(metrics.getCollectTime());
         return sb.toString();

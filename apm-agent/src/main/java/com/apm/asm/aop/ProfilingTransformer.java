@@ -41,6 +41,13 @@ public class ProfilingTransformer implements ClassFileTransformer {
         return classFileBuffer;
     }
 
+    /**
+     *
+     * @param loader
+     * @param className eg.  /bs/demoapp/controller/DemoController
+     * @param classFileBuffer
+     * @return
+     */
     private byte[] getBytes(ClassLoader loader,
                             String className,
                             byte[] classFileBuffer) {

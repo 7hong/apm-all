@@ -40,7 +40,7 @@ public class ApmConfig {
 
     private boolean showMethodParams;
 
-    private boolean printDebugLog;
+    private String LogLevel;
 
     private String excludeMethods;
 
@@ -48,9 +48,9 @@ public class ApmConfig {
 
     private String profilingParamsFile;
 
-    private ProfilingParams commonProfilingParams;
+    private MethodThreshold methodThreshold;
 
-    private Map<String, ProfilingParams> profilingParamsMap = MapUtils.createHashMap(100);
+    private Map<String, MethodThreshold> profilingParamsMap = MapUtils.createHashMap(100);
 
 
     /**
@@ -173,12 +173,12 @@ public class ApmConfig {
         this.excludeClassLoaders = excludeClassLoaders;
     }
 
-    public boolean isPrintDebugLog() {
-        return printDebugLog;
+    public String getLogLevel() {
+        return LogLevel;
     }
 
-    public void setPrintDebugLog(boolean printDebugLog) {
-        this.printDebugLog = printDebugLog;
+    public void setLogLevel(String logLevel) {
+        LogLevel = logLevel;
     }
 
     public String getExcludeMethods() {
@@ -205,25 +205,26 @@ public class ApmConfig {
         this.profilingParamsFile = profilingParamsFile;
     }
 
-    public void setCommonProfilingParams(int timeThreshold, int outThresholdCount) {
-        this.commonProfilingParams = ProfilingParams.of(timeThreshold, outThresholdCount);
+
+    public MethodThreshold getMethodThreshold() {
+        return methodThreshold;
     }
 
-    public ProfilingParams getCommonProfilingParams() {
-        return commonProfilingParams;
+    public void setMethodThreshold(MethodThreshold methodThreshold) {
+        this.methodThreshold = methodThreshold;
     }
 
     public void addProfilingParam(String methodName, int timeThreshold, int outThresholdCount) {
-        profilingParamsMap.put(methodName, ProfilingParams.of(timeThreshold, outThresholdCount));
+        profilingParamsMap.put(methodName, MethodThreshold.of(timeThreshold, outThresholdCount));
     }
 
-    public ProfilingParams getProfilingParam(String methodName) {
-        ProfilingParams params = profilingParamsMap.get(methodName);
+    public MethodThreshold getProfilingParam(String methodName) {
+        MethodThreshold params = profilingParamsMap.get(methodName);
         if (params != null) {
             return params;
         }
 
-        return commonProfilingParams;
+        return methodThreshold;
     }
 
     @Override
@@ -241,11 +242,11 @@ public class ApmConfig {
                 ", includePackages='" + includePackages + '\'' +
                 ", excludePackages='" + excludePackages + '\'' +
                 ", showMethodParams=" + showMethodParams +
-                ", printDebugLog=" + printDebugLog +
+                ", LogLevel=" + LogLevel +
                 ", excludeMethods='" + excludeMethods + '\'' +
                 ", excludePrivateMethod=" + excludePrivateMethod +
                 ", profilingParamsFile='" + profilingParamsFile + '\'' +
-                ", commonProfilingParams=" + commonProfilingParams +
+                ", MethodThreshold=" + methodThreshold +
                 ", profilingParamsMap=" + profilingParamsMap +
                 '}';
     }

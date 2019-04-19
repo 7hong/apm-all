@@ -48,9 +48,7 @@ public interface PropertyKeys {
 
     String FILTER_EXCLUDE_PACKAGES = "ExcludePackages";
 
-
-
-    String DEBUG_PRINT_DEBUG_LOG = "Debug.PrintDebugLog";
+    String LOG_LEVEL = "LogLevel";
 
     String FILTER_EXCLUDE_METHODS = "ExcludeMethods";
 
